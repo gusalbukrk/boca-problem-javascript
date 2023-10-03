@@ -1,0 +1,3 @@
+# BOCA problem package example with support for JavaScript submissions
+
+This problem package was generated using BOCA'S `boca/admin/buildproblem.php` page. But, to be able to accept submissions in JavaScript, 4 files were added — `compare/js`, `compile/js`, `limits/js` and `run/js`. These files are the same as their `py3` counterparts, except for the use of `node` instead of `python3` for the execution of the submitted code. Therefore, to be able to use this package, Node must've been installed in the BOCA server. You can install it using the following command: `wget https://nodejs.org/dist/v18.18.0/node-v18.18.0-linux-x64.tar.xz && tar -xf node-v18.18.0-linux-x64.tar.xz node-v18.18.0-linux-x64/bin/node && sudo mv node /home/bocajail/usr/bin/`.
