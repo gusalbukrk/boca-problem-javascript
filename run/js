@@ -67,7 +67,46 @@ if [ "$1" == "" -o "$2" == "" -o "$3" == "" ]; then
     echo "parameter problem"
     exit 43
 fi
-name=`basename "$1"`
+
+# create file containing the `input()` function
+cat << EOF > input.mjs
+import fs from 'fs';
+import readline from 'readline/promises';
+
+let input, close = () => null;
+
+if (process.stdin.isTTY) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+
+  input = async () => await rl.question('');
+
+  close = () => rl.close();
+} else {
+  input = (() => {
+    var data = fs.readFileSync(0, 'utf-8');
+
+    // removing last element because it's an empty line
+    const inputs = data.split('\n').slice(0, -1);
+
+    let counter = 0;  
+
+    return () => inputs[counter++];
+  })();
+}
+
+export { input, close };
+EOF
+
+# code to be run is saved in a file without extension
+# but, to run a JS file as a module, an extension is needed
+# even if there was a `package.json` with `type` set to `module`,
+# extension would be mandatory
+mv $1 "$1".mjs
+name=`basename "$1".mjs`
+
 if [ ! -r "$2" ]; then
     echo "$2 not found (or is not in the current dir) or it's not readable"
     exit 45
