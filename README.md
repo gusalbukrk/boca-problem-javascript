@@ -44,3 +44,7 @@ This file is only needed so participants can test their code in the development 
 Note that the JavaScript code must be written as an ES Module because of the use of features as `import` and `top-level await`. Therefore, the **file extension** of the submission must be `.mjs` instead of `.js`. For clarity, check out the JavaScript solution for this package problem in the [solutions/A.mjs](./solutions/A.mjs) file.
 
 Note that the JavaScript code must be written as an **ES Module** because of the use of features as `import` and `top-level await`. Therefore, the file extension of the submission must be `.mjs` instead of `.js` or there must be a `package.json` in the same directory as the submission with the contents `{ "type": "module" }`. As an example, check out the [solutions/A.mjs](./solutions/A.mjs) file for a solution using the `.mjs` extension approach.
+
+## To Do
+
+Currently, [run/js](./run/js) is executing the `node` command directly. However, every other language's `run` script uses `safeexec`. When trying to run `node` through `safeexec`, no output is shown and `echo $?` prints the error code 13 which is returned when an ESM-based script exited before the top-level code was resolved. Maybe there's a combination of `safeexec` arguments that can make it work.
