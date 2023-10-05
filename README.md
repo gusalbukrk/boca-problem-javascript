@@ -1,12 +1,14 @@
 # BOCA problem package example with support for JavaScript submissions
 
+> In short, the process to add support to JavaScript is comprised by 5 steps: 1 - install Node on the BOCA server; 2 - use the package problem in this repository as the template for your problems; 3 - add JavaScript in the `Languages` page; 4 - provide the `input.mjs` file to the contest participants; 5 - install Node on the Maratona Linux machines.
+
 This problem package was generated using BOCA'S `boca/admin/buildproblem.php` page. But, to be able to accept submissions in JavaScript, **4 files were added** — `compare/js`, `compile/js`, `limits/js` and `run/js`. These files are the same as their `py3` counterparts, except for the use of `node` instead of `python3` for the execution of the submitted code.
 
-Therefore, to be able to test JavaScript submissions, **Node** must've been installed in the BOCA server. You can install it using the following command: `wget https://nodejs.org/dist/v18.18.0/node-v18.18.0-linux-x64.tar.xz && tar -xf node-v18.18.0-linux-x64.tar.xz && sudo cp node-v18.18.0-linux-x64/bin/node /home/bocajail/usr/bin/`.
+Therefore, to be able to test JavaScript submissions, **Node** must've been installed in the BOCA server. You can install it using the following command: `wget https://nodejs.org/dist/v18.18.0/node-v18.18.0-linux-x64.tar.xz && tar -xf node-v18.18.0-linux-x64.tar.xz && sudo cp node-v18.18.0-linux-x64/bin/node /home/bocajail/usr/bin/`. The same command must be run in Maratona Linux to ensure that the participants can test their JavaScript code in the development environment — the only modification needed is to change the destination from `/home/bocajail/usr/bin/` to `/usr/bin/`.
 
 Also, it's necessary to include JavaScript in the `Languages` page (`admin/language.php`) with the `Extension` field set to `js`.
 
-During the contest, the participants which intend to submit solutions in JavaScript, must've at their disposal the following file exporting the **`input()`** function to be used to create prompts:
+During the contest, the participants which intend to submit solutions in JavaScript, must've at their disposal the following file named **`input.mjs`** which exports the `input()` function to be used to create prompts:
 
 ```js
 import fs from 'fs';
@@ -41,9 +43,7 @@ export { input, close };
 
 This file is only needed so participants can test their code in the development environment. It's not necessary to submit this file to BOCA (actually, it's not even possible given that BOCA only accepts one file per submission). The `run/js` script already creates a file with the same contents in the server for each submission.
 
-Note that the JavaScript code must be written as an ES Module because of the use of features as `import` and `top-level await`. Therefore, the **file extension** of the submission must be `.mjs` instead of `.js`. For clarity, check out the JavaScript solution for this package problem in the [solutions/A.mjs](./solutions/A.mjs) file.
-
-Note that the JavaScript code must be written as an **ES Module** because of the use of features as `import` and `top-level await`. Therefore, the file extension of the submission must be `.mjs` instead of `.js` or there must be a `package.json` in the same directory as the submission with the contents `{ "type": "module" }`. As an example, check out the [solutions/A.mjs](./solutions/A.mjs) file for a solution using the `.mjs` extension approach.
+Note that the JavaScript code must be written as an **ES Module** because of the use of features such as `import` and `top-level await`. Thus, the file extension of the submission must be `.mjs` instead of `.js` or there must be a `package.json` in the same directory as the submission with the contents `{ "type": "module" }`. As an example, check out the [solutions/A.mjs](./solutions/A.mjs) file for a solution using the `.mjs` extension approach.
 
 ## Background information
 
@@ -61,4 +61,8 @@ Futhermore, the sequence of the **execution of the scripts** inside the problem 
 
 ## To Do
 
-Currently, [run/js](./run/js) is executing the `node` command directly. However, every other language's `run` script uses `safeexec`. When trying to run `node` through `safeexec`, no output is shown and `echo $?` prints the error code 13 which is returned when an ESM-based script exited before the top-level code was resolved. Maybe there's a combination of `safeexec` arguments that can make it work.
+### Execute Node using `safeexec`
+
+Currently, [run/js](./run/js) is executing the `node` command directly. In contrast, every other language's `run` script uses [`safeexec`](https://github.com/ochko/safeexec) which provides a lightweight sandbox for safely executing user programs. Such tool is necessary due to the security concerns associated with the possibility of executing harmful code on the server.
+
+However, when trying to run `node` through `safeexec`, `6` is returned as the exit code and the following error message is printed to `stderr`: `/usr/bin/node[132545]: ../src/node_platform.cc:68:std::unique_ptr<long unsigned int> node::WorkerThreadsTaskRunner::DelayedTaskScheduler::Start(): Assertion (0) == (uv_thread_create(t.get(), start_thread, this))' failed.`. I was unable to discover a combination of arguments capable of making it work.

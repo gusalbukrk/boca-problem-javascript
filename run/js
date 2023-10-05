@@ -164,6 +164,7 @@ if [ ! -x "\$node" ]; then
     echo "\$node not found or it's not executable"
     exit 47
 fi
+# "$sf" -r$nruns -t$time -T$ttime -istdin0 -F256 -u256 -ostdout0 -estderr0 -U$bocau -G$bocag -n0 -C. -f$maxf -d$maxm -m$maxm -- "\$node" "$name
 cat stdin0 | "\$node" "$name" > stdout0
 retval=\$?
 echo \$retval > runit.retcode
